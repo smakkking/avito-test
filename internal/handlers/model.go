@@ -1,11 +1,13 @@
 package handlers
 
 import (
+	"encoding/json"
 	"errors"
 	"net/http"
 	"strconv"
 
 	"github.com/go-chi/render"
+	"github.com/smakkking/avito_test/internal/models"
 	"github.com/smakkking/avito_test/internal/services"
 )
 
@@ -129,6 +131,28 @@ func (h *Handler) GetAllBannersFiltered(w http.ResponseWriter, r *http.Request) 
 
 	w.WriteHeader(http.StatusOK)
 	render.JSON(w, r, banners)
+}
+
+func (h *Handler) CreateBanner(w http.ResponseWriter, r *http.Request) {
+	banner := new(models.BasicBannnerInfo)
+	err := json.NewDecoder(r.Body).Decode(banner)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		render.JSON(w, r, ErrMessage("некорректные данные"))
+		return
+	}
+
+	bannerID, err := h.bannerService.CreateBanner(r.Context(), banner)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		render.JSON(w, r, ErrMessage("Внутренняя ошибка сервера"))
+		return
+	}
+
+	w.WriteHeader(http.StatusCreated)
+	render.JSON(w, r, struct {
+		BannedID int `json:"banner_id"`
+	}{BannedID: bannerID})
 }
 
 func ErrMessage(text string) struct {

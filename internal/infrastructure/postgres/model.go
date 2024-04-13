@@ -44,6 +44,24 @@ func NewStorage(cfg app.Config) (*Storage, error) {
 	}, nil
 }
 
+func (s *Storage) CreateBanner(ctx context.Context, banner *models.BasicBannnerInfo) (int, error) {
+	var bannerID int
+
+	err := s.db.QueryRowContext(
+		ctx,
+		`
+		INSERT INTO BannersInfo("value", tag_array, feature, is_enabled)
+		VALUES ($1, $2, $3, $4);
+		`,
+		banner.Content, pq.Array(banner.TagIDs), banner.FeatureID, banner.IsActive,
+	).Scan(&bannerID)
+	if err != nil {
+		return 0, err
+	}
+
+	return bannerID, nil
+}
+
 func (s *Storage) GetUserBanner(ctx context.Context, tagID int, featureID int) (interface{}, bool, error) {
 	var data interface{}
 	var isEnabled bool

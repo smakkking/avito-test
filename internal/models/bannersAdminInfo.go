@@ -2,12 +2,16 @@ package models
 
 import "time"
 
-type BannerInfo struct {
-	BannerID  int         `json:"banner_id"`
+type BasicBannnerInfo struct {
 	TagIDs    []int       `json:"tag_ids"`
 	FeatureID int         `json:"feature_id"`
 	Content   interface{} `json:"content"`
 	IsActive  bool        `json:"is_active"`
-	CreatedAt time.Time   `json:"created_at"`
-	UpdatedAt time.Time   `json:"updated_at"`
+}
+
+type BannerInfo struct {
+	BasicBannnerInfo
+	BannerID  int       `json:"banner_id"`
+	CreatedAt time.Time `json:"created_at"`
+	UpdatedAt time.Time `json:"updated_at"`
 }

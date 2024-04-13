@@ -19,6 +19,7 @@ type Storage interface {
 		featureID int, featureSearch bool,
 		limit int, offset int,
 	) ([]*models.BannerInfo, error)
+	CreateBanner(ctx context.Context, banner *models.BasicBannnerInfo) (int, error)
 }
 
 func NewService(storage Storage) *Service {
@@ -52,4 +53,13 @@ func (s *Service) GetAllBannersFiltered(
 	}
 
 	return banners, err
+}
+
+func (s *Service) CreateBanner(ctx context.Context, banner *models.BasicBannnerInfo) (int, error) {
+	bannerID, err := s.bannerStorage.CreateBanner(ctx, banner)
+	if err != nil {
+		return 0, err
+	}
+
+	return bannerID, nil
 }
