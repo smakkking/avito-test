@@ -3,6 +3,7 @@ package postgres
 import (
 	"context"
 	"database/sql"
+	"errors"
 	"fmt"
 	"strings"
 	"time"
@@ -44,6 +45,27 @@ func NewStorage(cfg app.Config) (*Storage, error) {
 	}, nil
 }
 
+func (s *Storage) UpdateBanner(ctx context.Context, bannerID int, banner *models.BasicBannnerInfo) (bool, error) {
+	err := s.db.QueryRowContext(
+		ctx,
+		`
+		UPDATE BannersInfo
+		SET "value" = $1, tag_array = $2, feature = $3, is_enabled = $4
+		WHERE "id" = $5
+		RETURNING "id"
+		`,
+		banner.Content, pq.Array(banner.TagIDs), banner.FeatureID, banner.IsActive, bannerID,
+	).Scan(&bannerID)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return false, nil
+		}
+		return false, err
+	}
+
+	return true, nil
+}
+
 func (s *Storage) CreateBanner(ctx context.Context, banner *models.BasicBannnerInfo) (int, error) {
 	var bannerID int
 
@@ -51,7 +73,7 @@ func (s *Storage) CreateBanner(ctx context.Context, banner *models.BasicBannnerI
 		ctx,
 		`
 		INSERT INTO BannersInfo("value", tag_array, feature, is_enabled)
-		VALUES ($1, $2, $3, $4);
+		VALUES ($1, $2, $3, $4) RETURNING "id";
 		`,
 		banner.Content, pq.Array(banner.TagIDs), banner.FeatureID, banner.IsActive,
 	).Scan(&bannerID)

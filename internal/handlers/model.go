@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"strconv"
 
+	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/render"
 	"github.com/smakkking/avito_test/internal/models"
 	"github.com/smakkking/avito_test/internal/services"
@@ -153,6 +154,40 @@ func (h *Handler) CreateBanner(w http.ResponseWriter, r *http.Request) {
 	render.JSON(w, r, struct {
 		BannedID int `json:"banner_id"`
 	}{BannedID: bannerID})
+}
+
+func (h *Handler) UpdateBanner(w http.ResponseWriter, r *http.Request) {
+	data := chi.URLParam(r, "id")
+
+	bannerID, err := strconv.Atoi(data)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		render.JSON(w, r, ErrMessage("некорректные данные"))
+		return
+	}
+
+	banner := new(models.BasicBannnerInfo)
+	err = json.NewDecoder(r.Body).Decode(banner)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		render.JSON(w, r, ErrMessage("некорректные данные"))
+		return
+	}
+
+	affected, err := h.bannerService.UpdateBanner(r.Context(), bannerID, banner)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		render.JSON(w, r, ErrMessage("Внутренняя ошибка сервера"))
+		return
+	}
+
+	if !affected {
+		// это значит, что не нашли строк, куда вставлять данные
+		w.WriteHeader(http.StatusNotFound)
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
 }
 
 func ErrMessage(text string) struct {

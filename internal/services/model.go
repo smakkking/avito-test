@@ -20,6 +20,7 @@ type Storage interface {
 		limit int, offset int,
 	) ([]*models.BannerInfo, error)
 	CreateBanner(ctx context.Context, banner *models.BasicBannnerInfo) (int, error)
+	UpdateBanner(ctx context.Context, bannerID int, banner *models.BasicBannnerInfo) (bool, error)
 }
 
 func NewService(storage Storage) *Service {
@@ -31,6 +32,10 @@ func NewService(storage Storage) *Service {
 var (
 	ErrNotFound = errors.New("banner not found")
 )
+
+func (s *Service) UpdateBanner(ctx context.Context, bannerID int, banner *models.BasicBannnerInfo) (bool, error) {
+	return s.bannerStorage.UpdateBanner(ctx, bannerID, banner)
+}
 
 func (s *Service) GetUserBanner(ctx context.Context, tagID int, featureID int, useLastRevision bool) (interface{}, error) {
 	banner, _, err := s.bannerStorage.GetUserBanner(ctx, tagID, featureID)
