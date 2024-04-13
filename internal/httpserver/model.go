@@ -45,6 +45,7 @@ func (h *HTTPService) SetupHandlers(bannerHandler *handlers.Handler) {
 
 	h.mux.Post("/banner", bannerHandler.CreateBanner)
 	h.mux.Patch("/banner/{id}", bannerHandler.UpdateBanner)
+	h.mux.Delete("/banner/{id}", bannerHandler.DeleteBanner)
 }
 
 func (h *HTTPService) Run() {

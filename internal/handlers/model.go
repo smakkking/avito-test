@@ -190,6 +190,32 @@ func (h *Handler) UpdateBanner(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 }
 
+func (h *Handler) DeleteBanner(w http.ResponseWriter, r *http.Request) {
+	data := chi.URLParam(r, "id")
+
+	bannerID, err := strconv.Atoi(data)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		render.JSON(w, r, ErrMessage("некорректные данные"))
+		return
+	}
+
+	affected, err := h.bannerService.DeleteBanner(r.Context(), bannerID)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		render.JSON(w, r, ErrMessage("Внутренняя ошибка сервера"))
+		return
+	}
+
+	if !affected {
+		// это значит, что не нашли строк, куда вставлять данные
+		w.WriteHeader(http.StatusNotFound)
+		return
+	}
+
+	w.WriteHeader(http.StatusNoContent)
+}
+
 func ErrMessage(text string) struct {
 	Err string `json:"error"`
 } {
