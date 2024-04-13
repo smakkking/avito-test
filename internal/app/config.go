@@ -20,8 +20,6 @@ type Config struct {
 	PgDBName   string `yaml:"PG_DBNAME" env:"PG_DBNAME"`
 	PgUser     string `yaml:"PG_USER" env:"PG_USER"`
 	PgSSLMode  string `yaml:"PG_SSLMODE" env:"PG_SSLMODE"`
-
-	GrpcPort string `yaml:"GRPC_PORT" env:"GRPC_PORT"`
 }
 
 func MustLoadConfig(config_path string) (Config, error) {

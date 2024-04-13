@@ -1,1 +1,11 @@
-package config
+HTTP_ADDRESS: ":8080"
+HTTP_READ_TIMEOUT: 5s
+HTTP_WRITE_TIMEOUT: 5s
+HTTP_IDLE_TIMEOUT: 10s
+
+PG_HOST: "postgres"
+PG_PORT: "5432"
+PG_DBNAME: "urls"
+PG_USER: "postgres"
+PG_PASSWORD: "postgres"
+PG_SSLMODE: "disable"
