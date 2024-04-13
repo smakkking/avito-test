@@ -38,6 +38,8 @@ func (h *HTTPService) SetupHandlers(bannerHandler *handlers.Handler) {
 	h.mux.Use(middleware.RequestID)
 	h.mux.Use(middleware.Recoverer)
 
+	h.mux.Get("/user_banner", bannerHandler.GetUserBanner)
+	h.mux.Get("/banner", bannerHandler.GetAllBannersFiltered)
 	// h.mux.Post("/create", urlHandler.SaveURL)
 	// h.mux.Get("/{alias}", urlHandler.GetURL)
 }
