@@ -34,11 +34,17 @@ func (h *Handler) GetUserBanner(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	useLastRevision, err := strconv.ParseBool(r.URL.Query().Get("use_last_revision"))
-	if err != nil {
-		w.WriteHeader(http.StatusBadRequest)
-		render.JSON(w, r, ErrMessage("некорректные данные"))
-		return
+	var useLastRevision bool
+	data := r.URL.Query().Get("use_last_revision")
+	if data != "" {
+		useLastRevision, err = strconv.ParseBool(data)
+		if err != nil {
+			w.WriteHeader(http.StatusBadRequest)
+			render.JSON(w, r, ErrMessage("некорректные данные"))
+			return
+		}
+	} else {
+		useLastRevision = false
 	}
 
 	banner, err := h.bannerService.GetUserBanner(r.Context(), tagID, featureID, useLastRevision)
@@ -58,35 +64,63 @@ func (h *Handler) GetUserBanner(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handler) GetAllBannersFiltered(w http.ResponseWriter, r *http.Request) {
-	tagID, err := strconv.Atoi(r.URL.Query().Get("tag_id"))
-	if err != nil {
-		w.WriteHeader(http.StatusBadRequest)
-		render.JSON(w, r, ErrMessage("некорректные данные"))
-		return
+	var data string
+	var err error
+
+	var tagID int
+	var tagSearch bool
+	data = r.URL.Query().Get("tag_id")
+	if data != "" {
+		tagID, err = strconv.Atoi(r.URL.Query().Get("tag_id"))
+		if err != nil {
+			w.WriteHeader(http.StatusBadRequest)
+			render.JSON(w, r, ErrMessage("некорректные данные"))
+			return
+		}
+		tagSearch = true
 	}
 
-	featureID, err := strconv.Atoi(r.URL.Query().Get("feature_id"))
-	if err != nil {
-		w.WriteHeader(http.StatusBadRequest)
-		render.JSON(w, r, ErrMessage("некорректные данные"))
-		return
+	var featureID int
+	var featureSearch bool
+	data = r.URL.Query().Get("feature_id")
+	if data != "" {
+		featureID, err = strconv.Atoi(r.URL.Query().Get("feature_id"))
+		if err != nil {
+			w.WriteHeader(http.StatusBadRequest)
+			render.JSON(w, r, ErrMessage("некорректные данные"))
+			return
+		}
+		featureSearch = true
 	}
 
-	limit, err := strconv.Atoi(r.URL.Query().Get("limit"))
-	if err != nil {
-		w.WriteHeader(http.StatusBadRequest)
-		render.JSON(w, r, ErrMessage("некорректные данные"))
-		return
+	limit := -1
+	data = r.URL.Query().Get("limit")
+	if data != "" {
+		limit, err = strconv.Atoi(r.URL.Query().Get("limit"))
+		if err != nil || limit < 0 {
+			w.WriteHeader(http.StatusBadRequest)
+			render.JSON(w, r, ErrMessage("некорректные данные"))
+			return
+		}
 	}
 
-	offset, err := strconv.Atoi(r.URL.Query().Get("offset"))
-	if err != nil {
-		w.WriteHeader(http.StatusBadRequest)
-		render.JSON(w, r, ErrMessage("некорректные данные"))
-		return
+	offset := -1
+	data = r.URL.Query().Get("offset")
+	if data != "" {
+		offset, err = strconv.Atoi(r.URL.Query().Get("offset"))
+		if err != nil || offset < 0 {
+			w.WriteHeader(http.StatusBadRequest)
+			render.JSON(w, r, ErrMessage("некорректные данные"))
+			return
+		}
 	}
 
-	banners, err := h.bannerService.GetAllBannersFiltered(r.Context(), tagID, featureID, limit, offset)
+	banners, err := h.bannerService.GetAllBannersFiltered(
+		r.Context(),
+		tagID, tagSearch,
+		featureID, featureSearch,
+		limit, offset,
+	)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		render.JSON(w, r, ErrMessage("Внутренняя ошибка сервера"))

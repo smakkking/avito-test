@@ -13,7 +13,12 @@ type Service struct {
 
 type Storage interface {
 	GetUserBanner(ctx context.Context, tagID int, featureID int) (interface{}, bool, error)
-	GetAllBannersFiltered(ctx context.Context, tagID int, featureID int, limit int, offset int) ([]models.BannerInfo, error)
+	GetAllBannersFiltered(
+		ctx context.Context,
+		tagID int, tagSearch bool,
+		featureID int, featureSearch bool,
+		limit int, offset int,
+	) ([]*models.BannerInfo, error)
 }
 
 func NewService(storage Storage) *Service {
@@ -35,8 +40,13 @@ func (s *Service) GetUserBanner(ctx context.Context, tagID int, featureID int, u
 	return banner, nil
 }
 
-func (s *Service) GetAllBannersFiltered(ctx context.Context, tagID int, featureID int, limit int, offset int) ([]models.BannerInfo, error) {
-	banners, err := s.bannerStorage.GetAllBannersFiltered(ctx, tagID, featureID, limit, offset)
+func (s *Service) GetAllBannersFiltered(
+	ctx context.Context,
+	tagID int, tagSearch bool,
+	featureID int, featureSearch bool,
+	limit int, offset int,
+) ([]*models.BannerInfo, error) {
+	banners, err := s.bannerStorage.GetAllBannersFiltered(ctx, tagID, tagSearch, featureID, featureSearch, limit, offset)
 	if err != nil {
 		return nil, err
 	}
