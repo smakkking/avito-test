@@ -42,9 +42,6 @@ func (h *HTTPService) SetupHandlers(bannerHandler *handlers.Handler) {
 
 	h.mux.Get("/user_banner", bannerHandler.GetUserBanner)
 	h.mux.Get("/banner", bannerHandler.GetAllBannersFiltered)
-	// h.mux.Post("/create", urlHandler.SaveURL)
-	// h.mux.Get("/{alias}", urlHandler.GetURL)
-
 	h.mux.Post("/banner", bannerHandler.CreateBanner)
 	h.mux.Patch("/banner/{id}", bannerHandler.UpdateBanner)
 	h.mux.Delete("/banner/{id}", bannerHandler.DeleteBanner)

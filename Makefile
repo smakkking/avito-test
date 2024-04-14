@@ -28,4 +28,6 @@ apply-migrations:
 build-docker:
 	STORAGE=$(STORAGE) docker-compose up --build
 	 	
-	
+.PHONY: check
+check:
+	golangci-lint run ./...

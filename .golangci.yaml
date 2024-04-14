@@ -1,0 +1,148 @@
+run:
+  concurrency: 4
+  deadline: 30m
+  issues-exit-code: 1
+  tests: true
+  modules-download-mode: vendor
+  allow-parallel-runners: true
+  skip-dirs:
+    - ./vendor
+
+issues:
+  exclude-use-default: false
+  max-issues-per-linter: 100
+  max-same-issues: 10
+  new: false
+
+  exclude:
+    - "Sprintf"
+  
+  # Excluding configuration per-path, per-linter, per-text and per-source
+  exclude-rules:    
+    - path: _test\.go
+      linters:
+        - gocyclo
+        - errcheck
+        - dupl
+        - gosec
+        - lll
+        - funlen
+
+linters:
+  # подробнее о каждом - https://golangci-lint.run/usage/linters
+  disable-all: true
+  enable:
+    - bodyclose 
+    - dupl 
+    - exportloopref 
+    - goconst   
+    - dogsled 
+    - gofmt 
+    - goimports
+    - gomnd 
+    - goprintffuncname 
+    - depguard 
+    - gosimple    
+    - ineffassign
+    - misspell
+    - nakedret
+    - noctx
+    - typecheck
+    - unconvert
+    - unused
+    - whitespace
+    - govet
+    - gosec
+    - staticcheck
+    - unparam
+    - stylecheck
+    - funlen
+    - errcheck
+    - gochecknoinits
+    - gocritic
+    - gocyclo
+    - lll
+    - nolintlint
+
+linters-settings:
+  depguard:
+    list-type: denylist
+    rules:
+      main:
+        allow:
+          - $gostd
+          - github.com
+  dupl:
+    threshold: 100
+  funlen:
+    lines: 100
+    statements: -1
+    ignore-comments: true
+  goconst:
+    min-len: 6
+    min-occurrences: 5
+  gocritic:
+    enabled-tags:
+      - diagnostic
+      - experimental
+      - opinionated
+      - performance
+      - style
+    disabled-checks:
+      - dupImport # https://github.com/go-critic/go-critic/issues/845
+      - ifElseChain
+      - octalLiteral
+      - whyNoLint
+      - rangeValCopy
+      - unnamedResult
+
+    settings:
+      hugeParam:
+        sizeThreshold: 256
+  gocyclo:
+    min-complexity: 15
+  goimports:
+    local-prefixes: github.com/golangci/golangci-lint
+  gomnd:
+    # don't include the "operation" and "assign"
+    checks:
+      - argument
+      - case
+      - condition
+      - return
+    ignored-numbers:
+      - '0'
+      - '1'
+      - '2'
+      - '3'
+      - '10'
+      - '-1'
+      - '4'
+      - '8'
+      - '16'
+      - '32'
+      - '64'
+
+    ignored-functions:
+      - strings.SplitN
+
+  lll:
+    line-length: 140
+  misspell:
+    locale: US
+  nolintlint:
+    allow-unused: false # report any unused nolint directives
+    require-explanation: false # don't require an explanation for nolint directives
+    require-specific: false # don't require nolint directives to be specific about which linter is being skipped
+  gosec:
+    excludes:
+      - G402 # использование не tls соеднений
+      - G104
+      - G112
+      - G114
+      - G601
+
+  stylecheck:
+    checks: ["all", "-ST1000"]
+  errcheck:
+    ignore: Close

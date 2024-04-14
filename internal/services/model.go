@@ -78,7 +78,7 @@ func (s *Service) UpdateBanner(ctx context.Context, bannerID int, banner *models
 	return nil
 }
 
-func (s *Service) GetUserBanner(ctx context.Context, tagID int, featureID int, useLastRevision bool) (models.BannerContent, error) {
+func (s *Service) GetUserBanner(ctx context.Context, tagID, featureID int, useLastRevision bool) (models.BannerContent, error) {
 	if !useLastRevision {
 		banner, err := s.userBannerCache.GetUserBanner(ctx, tagID, featureID)
 		if err == nil {

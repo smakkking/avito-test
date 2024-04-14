@@ -24,9 +24,9 @@ type Config struct {
 	CacheExpirationTime time.Duration `yaml:"CACHE_EXPIRATION_TIME" env:"CACHE_EXPIRATION_TIME"`
 }
 
-func MustLoadConfig(config_path string) (Config, error) {
+func MustLoadConfig(configPath string) (Config, error) {
 	cfg := Config{}
-	err := cleanenv.ReadConfig(config_path, &cfg)
+	err := cleanenv.ReadConfig(configPath, &cfg)
 	if err != nil {
 		panic(fmt.Errorf("error reading config: %w", err))
 	}

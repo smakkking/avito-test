@@ -21,7 +21,7 @@ type Storage struct {
 func NewStorage(cfg app.Config) (*Storage, error) {
 	time.Sleep(5 * time.Second) // для корректного подключения в докере
 
-	database_url := fmt.Sprintf(
+	databaseURL := fmt.Sprintf(
 		"host=%s port=%s dbname=%s user=%s password=%s sslmode=%s",
 		cfg.PgHost,
 		cfg.PgPort,
@@ -30,7 +30,7 @@ func NewStorage(cfg app.Config) (*Storage, error) {
 		cfg.PgPassword,
 		cfg.PgSSLMode,
 	)
-	db, err := sql.Open("postgres", database_url)
+	db, err := sql.Open("postgres", databaseURL)
 	if err != nil {
 		return nil, err
 	}
@@ -103,7 +103,7 @@ func (s *Storage) CreateBanner(ctx context.Context, banner *models.BasicBannnerI
 	return bannerID, nil
 }
 
-func (s *Storage) GetUserBanner(ctx context.Context, tagID int, featureID int) (models.BannerContent, bool, error) {
+func (s *Storage) GetUserBanner(ctx context.Context, tagID, featureID int) (models.BannerContent, bool, error) {
 	var data models.BannerContent
 	var isEnabled bool
 
@@ -173,9 +173,11 @@ func (s *Storage) GetAllBannersFiltered(
 	for rows.Next() {
 		banner := new(models.BannerInfo)
 
+		x := make([]sql.NullInt32, 0)
+
 		err := rows.Scan(
 			&banner.BannerID,
-			pq.Array(&banner.TagIDs), // почитать в статье
+			pq.Array(&x),
 			&banner.Content,
 			&banner.FeatureID,
 			&banner.IsActive,
@@ -184,6 +186,10 @@ func (s *Storage) GetAllBannersFiltered(
 		)
 		if err != nil {
 			return nil, err
+		}
+
+		for _, val := range x {
+			banner.TagIDs = append(banner.TagIDs, int(val.Int32))
 		}
 
 		result = append(result, banner)
