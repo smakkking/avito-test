@@ -3,11 +3,13 @@ package handlers
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 	"net/http"
 	"strconv"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/render"
+	"github.com/sirupsen/logrus"
 	"github.com/smakkking/avito_test/internal/models"
 	"github.com/smakkking/avito_test/internal/services"
 )
@@ -23,8 +25,12 @@ func NewHandler(service *services.Service) *Handler {
 }
 
 func (h *Handler) GetUserBanner(w http.ResponseWriter, r *http.Request) {
+	const op = "handler.GetUserBanner"
+
 	tagID, err := strconv.Atoi(r.URL.Query().Get("tag_id"))
 	if err != nil {
+		logrus.Error(fmt.Errorf("%s: %w", op, err))
+
 		w.WriteHeader(http.StatusBadRequest)
 		render.JSON(w, r, ErrMessage("некорректные данные"))
 		return
@@ -32,6 +38,8 @@ func (h *Handler) GetUserBanner(w http.ResponseWriter, r *http.Request) {
 
 	featureID, err := strconv.Atoi(r.URL.Query().Get("feature_id"))
 	if err != nil {
+		logrus.Error(fmt.Errorf("%s: %w", op, err))
+
 		w.WriteHeader(http.StatusBadRequest)
 		render.JSON(w, r, ErrMessage("некорректные данные"))
 		return
@@ -42,6 +50,8 @@ func (h *Handler) GetUserBanner(w http.ResponseWriter, r *http.Request) {
 	if data != "" {
 		useLastRevision, err = strconv.ParseBool(data)
 		if err != nil {
+			logrus.Error(fmt.Errorf("%s: %w", op, err))
+
 			w.WriteHeader(http.StatusBadRequest)
 			render.JSON(w, r, ErrMessage("некорректные данные"))
 			return
@@ -52,6 +62,8 @@ func (h *Handler) GetUserBanner(w http.ResponseWriter, r *http.Request) {
 
 	banner, err := h.bannerService.GetUserBanner(r.Context(), tagID, featureID, useLastRevision)
 	if err != nil {
+		logrus.Error(fmt.Errorf("%s: %w", op, err))
+
 		if errors.Is(err, services.ErrNotFound) {
 			w.WriteHeader(http.StatusNotFound)
 			return
@@ -67,11 +79,15 @@ func (h *Handler) GetUserBanner(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	logrus.Debug(banner)
+
 	w.WriteHeader(http.StatusOK)
 	render.JSON(w, r, banner)
 }
 
 func (h *Handler) GetAllBannersFiltered(w http.ResponseWriter, r *http.Request) {
+	const op = "handler.GetAllBannersFiltered"
+
 	var data string
 	var err error
 
@@ -81,6 +97,8 @@ func (h *Handler) GetAllBannersFiltered(w http.ResponseWriter, r *http.Request) 
 	if data != "" {
 		tagID, err = strconv.Atoi(r.URL.Query().Get("tag_id"))
 		if err != nil {
+			logrus.Error(fmt.Errorf("%s: %w", op, err))
+
 			w.WriteHeader(http.StatusBadRequest)
 			render.JSON(w, r, ErrMessage("некорректные данные"))
 			return
@@ -94,6 +112,8 @@ func (h *Handler) GetAllBannersFiltered(w http.ResponseWriter, r *http.Request) 
 	if data != "" {
 		featureID, err = strconv.Atoi(r.URL.Query().Get("feature_id"))
 		if err != nil {
+			logrus.Error(fmt.Errorf("%s: %w", op, err))
+
 			w.WriteHeader(http.StatusBadRequest)
 			render.JSON(w, r, ErrMessage("некорректные данные"))
 			return
@@ -106,6 +126,8 @@ func (h *Handler) GetAllBannersFiltered(w http.ResponseWriter, r *http.Request) 
 	if data != "" {
 		limit, err = strconv.Atoi(r.URL.Query().Get("limit"))
 		if err != nil || limit < 0 {
+			logrus.Error(fmt.Errorf("%s: %w", op, err))
+
 			w.WriteHeader(http.StatusBadRequest)
 			render.JSON(w, r, ErrMessage("некорректные данные"))
 			return
@@ -117,6 +139,8 @@ func (h *Handler) GetAllBannersFiltered(w http.ResponseWriter, r *http.Request) 
 	if data != "" {
 		offset, err = strconv.Atoi(r.URL.Query().Get("offset"))
 		if err != nil || offset < 0 {
+			logrus.Error(fmt.Errorf("%s: %w", op, err))
+
 			w.WriteHeader(http.StatusBadRequest)
 			render.JSON(w, r, ErrMessage("некорректные данные"))
 			return
@@ -130,6 +154,8 @@ func (h *Handler) GetAllBannersFiltered(w http.ResponseWriter, r *http.Request) 
 		limit, offset,
 	)
 	if err != nil {
+		logrus.Error(fmt.Errorf("%s: %w", op, err))
+
 		if errors.Is(err, services.ErrNotAllowed) {
 			w.WriteHeader(http.StatusForbidden)
 			return
@@ -140,14 +166,20 @@ func (h *Handler) GetAllBannersFiltered(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
+	logrus.Debug(banners)
+
 	w.WriteHeader(http.StatusOK)
 	render.JSON(w, r, banners)
 }
 
 func (h *Handler) CreateBanner(w http.ResponseWriter, r *http.Request) {
+	const op = "handler.CreateBanner"
+
 	banner := new(models.BasicBannnerInfo)
 	err := json.NewDecoder(r.Body).Decode(banner)
 	if err != nil {
+		logrus.Error(fmt.Errorf("%s: %w", op, err))
+
 		w.WriteHeader(http.StatusBadRequest)
 		render.JSON(w, r, ErrMessage("некорректные данные"))
 		return
@@ -155,6 +187,8 @@ func (h *Handler) CreateBanner(w http.ResponseWriter, r *http.Request) {
 
 	bannerID, err := h.bannerService.CreateBanner(r.Context(), banner)
 	if err != nil {
+		logrus.Error(fmt.Errorf("%s: %w", op, err))
+
 		if errors.Is(err, services.ErrNotAllowed) {
 			w.WriteHeader(http.StatusForbidden)
 			return
@@ -164,6 +198,8 @@ func (h *Handler) CreateBanner(w http.ResponseWriter, r *http.Request) {
 		render.JSON(w, r, ErrMessage("Внутренняя ошибка сервера"))
 		return
 	}
+
+	logrus.Debug(bannerID)
 
 	w.WriteHeader(http.StatusCreated)
 	render.JSON(w, r, struct {
@@ -172,10 +208,14 @@ func (h *Handler) CreateBanner(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handler) UpdateBanner(w http.ResponseWriter, r *http.Request) {
+	const op = "handler.UpdateBanner"
+
 	data := chi.URLParam(r, "id")
 
 	bannerID, err := strconv.Atoi(data)
 	if err != nil {
+		logrus.Error(fmt.Errorf("%s: %w", op, err))
+
 		w.WriteHeader(http.StatusBadRequest)
 		render.JSON(w, r, ErrMessage("некорректные данные"))
 		return
@@ -184,26 +224,30 @@ func (h *Handler) UpdateBanner(w http.ResponseWriter, r *http.Request) {
 	banner := new(models.BasicBannnerInfo)
 	err = json.NewDecoder(r.Body).Decode(banner)
 	if err != nil {
+		logrus.Error(fmt.Errorf("%s: %w", op, err))
+
 		w.WriteHeader(http.StatusBadRequest)
 		render.JSON(w, r, ErrMessage("некорректные данные"))
 		return
 	}
 
-	affected, err := h.bannerService.UpdateBanner(r.Context(), bannerID, banner)
+	err = h.bannerService.UpdateBanner(r.Context(), bannerID, banner)
 	if err != nil {
+		logrus.Error(fmt.Errorf("%s: %w", op, err))
+
 		if errors.Is(err, services.ErrNotAllowed) {
 			w.WriteHeader(http.StatusForbidden)
 			return
 		}
 
+		if errors.Is(err, services.ErrNotFound) {
+			// это значит, что не нашли строк, куда вставлять данные
+			w.WriteHeader(http.StatusNotFound)
+			return
+		}
+
 		w.WriteHeader(http.StatusInternalServerError)
 		render.JSON(w, r, ErrMessage("Внутренняя ошибка сервера"))
-		return
-	}
-
-	if !affected {
-		// это значит, что не нашли строк, куда вставлять данные
-		w.WriteHeader(http.StatusNotFound)
 		return
 	}
 
@@ -211,30 +255,36 @@ func (h *Handler) UpdateBanner(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handler) DeleteBanner(w http.ResponseWriter, r *http.Request) {
+	const op = "handler.DeleteBanner"
+
 	data := chi.URLParam(r, "id")
 
 	bannerID, err := strconv.Atoi(data)
 	if err != nil {
+		logrus.Error(fmt.Errorf("%s: %w", op, err))
+
 		w.WriteHeader(http.StatusBadRequest)
 		render.JSON(w, r, ErrMessage("некорректные данные"))
 		return
 	}
 
-	affected, err := h.bannerService.DeleteBanner(r.Context(), bannerID)
+	err = h.bannerService.DeleteBanner(r.Context(), bannerID)
 	if err != nil {
+		logrus.Error(fmt.Errorf("%s: %w", op, err))
+
 		if errors.Is(err, services.ErrNotAllowed) {
 			w.WriteHeader(http.StatusForbidden)
 			return
 		}
 
+		if errors.Is(err, services.ErrNotFound) {
+			// это значит, что не нашли строк, куда вставлять данные
+			w.WriteHeader(http.StatusNotFound)
+			return
+		}
+
 		w.WriteHeader(http.StatusInternalServerError)
 		render.JSON(w, r, ErrMessage("Внутренняя ошибка сервера"))
-		return
-	}
-
-	if !affected {
-		// это значит, что не нашли строк, куда вставлять данные
-		w.WriteHeader(http.StatusNotFound)
 		return
 	}
 

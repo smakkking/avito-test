@@ -43,20 +43,38 @@ var (
 	ErrNotAllowed = errors.New("not allowed")
 )
 
-func (s *Service) DeleteBanner(ctx context.Context, bannerID int) (bool, error) {
+func (s *Service) DeleteBanner(ctx context.Context, bannerID int) error {
 	if !utils.IsAdmin(ctx) {
-		return false, ErrNotAllowed
+		return ErrNotAllowed
 	}
 
-	return s.bannerStorage.DeleteBanner(ctx, bannerID)
+	affected, err := s.bannerStorage.DeleteBanner(ctx, bannerID)
+	if err != nil {
+		return err
+	}
+
+	if !affected {
+		return ErrNotFound
+	}
+
+	return nil
 }
 
-func (s *Service) UpdateBanner(ctx context.Context, bannerID int, banner *models.BasicBannnerInfo) (bool, error) {
+func (s *Service) UpdateBanner(ctx context.Context, bannerID int, banner *models.BasicBannnerInfo) error {
 	if !utils.IsAdmin(ctx) {
-		return false, ErrNotAllowed
+		return ErrNotAllowed
 	}
 
-	return s.bannerStorage.UpdateBanner(ctx, bannerID, banner)
+	affected, err := s.bannerStorage.UpdateBanner(ctx, bannerID, banner)
+	if err != nil {
+		return err
+	}
+
+	if !affected {
+		return ErrNotFound
+	}
+
+	return nil
 }
 
 func (s *Service) GetUserBanner(ctx context.Context, tagID int, featureID int, useLastRevision bool) (interface{}, error) {

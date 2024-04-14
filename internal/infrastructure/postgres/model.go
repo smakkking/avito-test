@@ -69,7 +69,7 @@ func (s *Storage) UpdateBanner(ctx context.Context, bannerID int, banner *models
 		ctx,
 		`
 		UPDATE BannersInfo
-		SET "value" = $1, tag_array = $2, feature = $3, is_enabled = $4
+		SET "value" = $1, tag_array = $2, feature = $3, is_enabled = $4, updated_at = now()
 		WHERE "id" = $5
 		RETURNING "id"
 		`,
