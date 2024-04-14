@@ -5,7 +5,7 @@ HTTP_IDLE_TIMEOUT: 10s
 
 PG_HOST: "postgres"
 PG_PORT: "5432"
-PG_DBNAME: "urls"
+PG_DBNAME: "banners"
 PG_USER: "postgres"
 PG_PASSWORD: "postgres"
 PG_SSLMODE: "disable"

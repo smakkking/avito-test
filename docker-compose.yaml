@@ -1,0 +1,48 @@
+version: "3.9"
+services:
+  my_app:
+    container_name: my_app
+
+    build:
+      context: .
+      dockerfile: Dockerfile
+
+    environment:
+      ENV: prod
+
+    depends_on:
+      - postgres
+    ports:
+      - "8080:8080"
+
+    networks:
+      - postgres
+
+  postgres:
+    container_name: my_postgres
+    image: postgres:13.3
+
+    environment:
+      POSTGRES_DB: "banners"
+      POSTGRES_USER: "postgres"
+      POSTGRES_PASSWORD: "postgres"
+      PGDATA: "/var/lib/postgresql/data/pgdata"
+
+    restart: always
+
+    volumes:
+      - postgres_db:/var/lib/postgresql/data
+
+    ports:
+      - "7557:5432"
+
+    networks:
+      - postgres
+
+volumes:
+  postgres_db:
+    driver: local
+
+networks:
+  postgres:
+    driver: bridge
