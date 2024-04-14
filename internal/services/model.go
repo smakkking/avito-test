@@ -14,7 +14,7 @@ type Service struct {
 }
 
 type Storage interface {
-	GetUserBanner(ctx context.Context, tagID int, featureID int) (interface{}, bool, error)
+	GetUserBanner(ctx context.Context, tagID int, featureID int) (models.BannerContent, bool, error)
 	GetAllBannersFiltered(
 		ctx context.Context,
 		tagID int, tagSearch bool,
@@ -27,8 +27,8 @@ type Storage interface {
 }
 
 type CacheStorage interface {
-	GetUserBanner(ctx context.Context, tagID int, featureID int) (interface{}, error)
-	SaveUserBanner(ctx context.Context, tagID int, featureID int, value interface{})
+	GetUserBanner(ctx context.Context, tagID int, featureID int) (models.BannerContent, error)
+	SaveUserBanner(ctx context.Context, tagID int, featureID int, value models.BannerContent)
 }
 
 func NewService(storage Storage, cacheStorage CacheStorage) *Service {
@@ -77,7 +77,7 @@ func (s *Service) UpdateBanner(ctx context.Context, bannerID int, banner *models
 	return nil
 }
 
-func (s *Service) GetUserBanner(ctx context.Context, tagID int, featureID int, useLastRevision bool) (interface{}, error) {
+func (s *Service) GetUserBanner(ctx context.Context, tagID int, featureID int, useLastRevision bool) (models.BannerContent, error) {
 	if !useLastRevision {
 		banner, err := s.userBannerCache.GetUserBanner(ctx, tagID, featureID)
 		if err == nil {

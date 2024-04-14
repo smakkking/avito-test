@@ -8,10 +8,10 @@ import (
 )
 
 type BasicBannnerInfo struct {
-	TagIDs    []int       `json:"tag_ids"`
-	FeatureID int         `json:"feature_id"`
-	Content   interface{} `json:"content"`
-	IsActive  bool        `json:"is_active"`
+	TagIDs    []int         `json:"tag_ids"`
+	FeatureID int           `json:"feature_id"`
+	Content   BannerContent `json:"content"`
+	IsActive  bool          `json:"is_active"`
 }
 
 type BannerInfo struct {

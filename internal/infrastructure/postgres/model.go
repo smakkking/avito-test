@@ -103,8 +103,8 @@ func (s *Storage) CreateBanner(ctx context.Context, banner *models.BasicBannnerI
 	return bannerID, nil
 }
 
-func (s *Storage) GetUserBanner(ctx context.Context, tagID int, featureID int) (interface{}, bool, error) {
-	var data interface{}
+func (s *Storage) GetUserBanner(ctx context.Context, tagID int, featureID int) (models.BannerContent, bool, error) {
+	var data models.BannerContent
 	var isEnabled bool
 
 	err := s.db.QueryRowContext(
