@@ -20,6 +20,8 @@ type Config struct {
 	PgDBName   string `yaml:"PG_DBNAME" env:"PG_DBNAME"`
 	PgUser     string `yaml:"PG_USER" env:"PG_USER"`
 	PgSSLMode  string `yaml:"PG_SSLMODE" env:"PG_SSLMODE"`
+
+	CacheExpirationTime time.Duration `yaml:"CACHE_EXPIRATION_TIME" env:"CACHE_EXPIRATION_TIME"`
 }
 
 func MustLoadConfig(config_path string) (Config, error) {

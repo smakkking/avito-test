@@ -7,6 +7,7 @@ import (
 	"github.com/smakkking/avito_test/internal/app"
 	"github.com/smakkking/avito_test/internal/handlers"
 	"github.com/smakkking/avito_test/internal/httpserver"
+	"github.com/smakkking/avito_test/internal/infrastructure/cache"
 	"github.com/smakkking/avito_test/internal/infrastructure/postgres"
 	"github.com/smakkking/avito_test/internal/services"
 )
@@ -35,8 +36,10 @@ func main() {
 		panic(err)
 	}
 
+	bannerCache := cache.NewCache(config.CacheExpirationTime)
+
 	// init сервисы
-	bannerService := services.NewService(bannerStorage)
+	bannerService := services.NewService(bannerStorage, bannerCache)
 
 	// init хендлеры
 	bannerHandler := handlers.NewHandler(bannerService)

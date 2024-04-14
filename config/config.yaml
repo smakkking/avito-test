@@ -9,3 +9,5 @@ PG_DBNAME: "urls"
 PG_USER: "postgres"
 PG_PASSWORD: "postgres"
 PG_SSLMODE: "disable"
+
+CACHE_EXPIRATION_TIME: 5m

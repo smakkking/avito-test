@@ -9,7 +9,8 @@ import (
 )
 
 type Service struct {
-	bannerStorage Storage
+	bannerStorage   Storage
+	userBannerCache CacheStorage
 }
 
 type Storage interface {
@@ -25,9 +26,15 @@ type Storage interface {
 	DeleteBanner(ctx context.Context, bannerID int) (bool, error)
 }
 
-func NewService(storage Storage) *Service {
+type CacheStorage interface {
+	GetUserBanner(ctx context.Context, tagID int, featureID int) (interface{}, error)
+	SaveUserBanner(ctx context.Context, tagID int, featureID int, value interface{})
+}
+
+func NewService(storage Storage, cacheStorage CacheStorage) *Service {
 	return &Service{
-		bannerStorage: storage,
+		bannerStorage:   storage,
+		userBannerCache: cacheStorage,
 	}
 }
 
@@ -53,6 +60,13 @@ func (s *Service) UpdateBanner(ctx context.Context, bannerID int, banner *models
 }
 
 func (s *Service) GetUserBanner(ctx context.Context, tagID int, featureID int, useLastRevision bool) (interface{}, error) {
+	if !useLastRevision {
+		banner, err := s.userBannerCache.GetUserBanner(ctx, tagID, featureID)
+		if err == nil {
+			return banner, nil
+		}
+	}
+
 	banner, enabled, err := s.bannerStorage.GetUserBanner(ctx, tagID, featureID)
 
 	if err != nil {
@@ -63,6 +77,7 @@ func (s *Service) GetUserBanner(ctx context.Context, tagID int, featureID int, u
 		return nil, ErrNotAllowed
 	}
 
+	s.userBannerCache.SaveUserBanner(ctx, tagID, featureID, banner)
 	return banner, nil
 }
 
