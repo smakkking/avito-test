@@ -56,7 +56,7 @@ func TestGetOldValue(t *testing.T) {
 		HasValue("url", "some_url")
 
 	// admin delete banner
-	e.DELETE("banner/1").
+	e.DELETE("banner/{id}", 1).
 		WithHeader("token", "admin").
 		Expect().
 		Status(http.StatusNoContent)
