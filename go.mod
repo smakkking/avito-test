@@ -1,6 +1,6 @@
 module github.com/smakkking/avito_test
 
-go 1.22.2
+go 1.22.1
 
 require (
 	github.com/BurntSushi/toml v1.2.1 // indirect
