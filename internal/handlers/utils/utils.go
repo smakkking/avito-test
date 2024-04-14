@@ -6,7 +6,7 @@ import (
 	"net/http"
 )
 
-func JSON(w http.ResponseWriter, r *http.Request, v interface{}) {
+func JSONwithCode(w http.ResponseWriter, r *http.Request, code int, v interface{}) {
 	buf := &bytes.Buffer{}
 	enc := json.NewEncoder(buf)
 	if err := enc.Encode(v); err != nil {
@@ -15,6 +15,7 @@ func JSON(w http.ResponseWriter, r *http.Request, v interface{}) {
 	}
 
 	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(code)
 	w.Write(buf.Bytes()) //nolint:errcheck
 }
 

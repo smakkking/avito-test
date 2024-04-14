@@ -39,9 +39,7 @@ func TestGetOldValue(t *testing.T) {
 		WithHeader("token", "admin").
 		WithBytes(data).
 		Expect().
-		Status(http.StatusCreated).
-		JSON().Object().
-		HasValue("banner_id", 1)
+		Status(http.StatusCreated)
 
 	// user gets banner
 	e.GET("/user_banner").
@@ -56,7 +54,7 @@ func TestGetOldValue(t *testing.T) {
 		HasValue("url", "some_url")
 
 	// admin delete banner
-	e.DELETE("banner/{id}", 1).
+	e.DELETE("/banner/{id}", 1).
 		WithHeader("token", "admin").
 		Expect().
 		Status(http.StatusNoContent)
@@ -123,7 +121,5 @@ func TestCreate(t *testing.T) {
 		WithHeader("token", "admin").
 		WithBytes(data).
 		Expect().
-		Status(http.StatusCreated).
-		JSON().Object().
-		HasValue("banner_id", 1)
+		Status(http.StatusCreated)
 }

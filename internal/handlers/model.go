@@ -31,8 +31,7 @@ func (h *Handler) GetUserBanner(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		logrus.Error(fmt.Errorf("%s: %w", op, err))
 
-		w.WriteHeader(http.StatusBadRequest)
-		utils.JSON(w, r, utils.ErrMessage("некорректные данные"))
+		utils.JSONwithCode(w, r, http.StatusBadRequest, utils.ErrMessage("некорректные данные"))
 		return
 	}
 
@@ -40,8 +39,7 @@ func (h *Handler) GetUserBanner(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		logrus.Error(fmt.Errorf("%s: %w", op, err))
 
-		w.WriteHeader(http.StatusBadRequest)
-		utils.JSON(w, r, utils.ErrMessage("некорректные данные"))
+		utils.JSONwithCode(w, r, http.StatusBadRequest, utils.ErrMessage("некорректные данные"))
 		return
 	}
 
@@ -52,8 +50,7 @@ func (h *Handler) GetUserBanner(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			logrus.Error(fmt.Errorf("%s: %w", op, err))
 
-			w.WriteHeader(http.StatusBadRequest)
-			utils.JSON(w, r, utils.ErrMessage("некорректные данные"))
+			utils.JSONwithCode(w, r, http.StatusBadRequest, utils.ErrMessage("некорректные данные"))
 			return
 		}
 	} else {
@@ -74,15 +71,13 @@ func (h *Handler) GetUserBanner(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		w.WriteHeader(http.StatusInternalServerError)
-		utils.JSON(w, r, utils.ErrMessage("Внутренняя ошибка сервера"))
+		utils.JSONwithCode(w, r, http.StatusInternalServerError, utils.ErrMessage("Внутренняя ошибка сервера"))
 		return
 	}
 
 	logrus.Debug(banner)
 
-	w.WriteHeader(http.StatusOK)
-	utils.JSON(w, r, banner)
+	utils.JSONwithCode(w, r, http.StatusOK, banner)
 }
 
 func (h *Handler) GetAllBannersFiltered(w http.ResponseWriter, r *http.Request) {
@@ -99,8 +94,7 @@ func (h *Handler) GetAllBannersFiltered(w http.ResponseWriter, r *http.Request) 
 		if err != nil {
 			logrus.Error(fmt.Errorf("%s: %w", op, err))
 
-			w.WriteHeader(http.StatusBadRequest)
-			utils.JSON(w, r, utils.ErrMessage("некорректные данные"))
+			utils.JSONwithCode(w, r, http.StatusBadRequest, utils.ErrMessage("некорректные данные"))
 			return
 		}
 		tagSearch = true
@@ -114,8 +108,7 @@ func (h *Handler) GetAllBannersFiltered(w http.ResponseWriter, r *http.Request) 
 		if err != nil {
 			logrus.Error(fmt.Errorf("%s: %w", op, err))
 
-			w.WriteHeader(http.StatusBadRequest)
-			utils.JSON(w, r, utils.ErrMessage("некорректные данные"))
+			utils.JSONwithCode(w, r, http.StatusBadRequest, utils.ErrMessage("некорректные данные"))
 			return
 		}
 		featureSearch = true
@@ -128,8 +121,7 @@ func (h *Handler) GetAllBannersFiltered(w http.ResponseWriter, r *http.Request) 
 		if err != nil || limit < 0 {
 			logrus.Error(fmt.Errorf("%s: %w", op, err))
 
-			w.WriteHeader(http.StatusBadRequest)
-			utils.JSON(w, r, utils.ErrMessage("некорректные данные"))
+			utils.JSONwithCode(w, r, http.StatusBadRequest, utils.ErrMessage("некорректные данные"))
 			return
 		}
 	}
@@ -141,8 +133,7 @@ func (h *Handler) GetAllBannersFiltered(w http.ResponseWriter, r *http.Request) 
 		if err != nil || offset < 0 {
 			logrus.Error(fmt.Errorf("%s: %w", op, err))
 
-			w.WriteHeader(http.StatusBadRequest)
-			utils.JSON(w, r, utils.ErrMessage("некорректные данные"))
+			utils.JSONwithCode(w, r, http.StatusBadRequest, utils.ErrMessage("некорректные данные"))
 			return
 		}
 	}
@@ -161,15 +152,13 @@ func (h *Handler) GetAllBannersFiltered(w http.ResponseWriter, r *http.Request) 
 			return
 		}
 
-		w.WriteHeader(http.StatusInternalServerError)
-		utils.JSON(w, r, utils.ErrMessage("Внутренняя ошибка сервера"))
+		utils.JSONwithCode(w, r, http.StatusInternalServerError, utils.ErrMessage("Внутренняя ошибка сервера"))
 		return
 	}
 
 	logrus.Debug(banners)
 
-	w.WriteHeader(http.StatusOK)
-	utils.JSON(w, r, banners)
+	utils.JSONwithCode(w, r, http.StatusOK, banners)
 }
 
 func (h *Handler) CreateBanner(w http.ResponseWriter, r *http.Request) {
@@ -180,8 +169,7 @@ func (h *Handler) CreateBanner(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		logrus.Error(fmt.Errorf("%s: %w", op, err))
 
-		w.WriteHeader(http.StatusBadRequest)
-		utils.JSON(w, r, utils.ErrMessage("некорректные данные"))
+		utils.JSONwithCode(w, r, http.StatusBadRequest, utils.ErrMessage("некорректные данные"))
 		return
 	}
 
@@ -194,15 +182,13 @@ func (h *Handler) CreateBanner(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		w.WriteHeader(http.StatusInternalServerError)
-		utils.JSON(w, r, utils.ErrMessage("Внутренняя ошибка сервера"))
+		utils.JSONwithCode(w, r, http.StatusInternalServerError, utils.ErrMessage("Внутренняя ошибка сервера"))
 		return
 	}
 
 	logrus.Debug(bannerID)
 
-	w.WriteHeader(http.StatusCreated)
-	utils.JSON(w, r, struct {
+	utils.JSONwithCode(w, r, http.StatusCreated, struct {
 		BannedID int `json:"banner_id"`
 	}{BannedID: bannerID})
 }
@@ -216,8 +202,7 @@ func (h *Handler) UpdateBanner(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		logrus.Error(fmt.Errorf("%s: %w", op, err))
 
-		w.WriteHeader(http.StatusBadRequest)
-		utils.JSON(w, r, utils.ErrMessage("некорректные данные"))
+		utils.JSONwithCode(w, r, http.StatusBadRequest, utils.ErrMessage("некорректные данные"))
 		return
 	}
 
@@ -226,8 +211,7 @@ func (h *Handler) UpdateBanner(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		logrus.Error(fmt.Errorf("%s: %w", op, err))
 
-		w.WriteHeader(http.StatusBadRequest)
-		utils.JSON(w, r, utils.ErrMessage("некорректные данные"))
+		utils.JSONwithCode(w, r, http.StatusBadRequest, utils.ErrMessage("некорректные данные"))
 		return
 	}
 
@@ -246,8 +230,7 @@ func (h *Handler) UpdateBanner(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		w.WriteHeader(http.StatusInternalServerError)
-		utils.JSON(w, r, utils.ErrMessage("Внутренняя ошибка сервера"))
+		utils.JSONwithCode(w, r, http.StatusInternalServerError, utils.ErrMessage("Внутренняя ошибка сервера"))
 		return
 	}
 
@@ -263,8 +246,7 @@ func (h *Handler) DeleteBanner(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		logrus.Error(fmt.Errorf("%s: %w", op, err))
 
-		w.WriteHeader(http.StatusBadRequest)
-		utils.JSON(w, r, utils.ErrMessage("некорректные данные"))
+		utils.JSONwithCode(w, r, http.StatusBadRequest, utils.ErrMessage("некорректные данные"))
 		return
 	}
 
@@ -283,8 +265,7 @@ func (h *Handler) DeleteBanner(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		w.WriteHeader(http.StatusInternalServerError)
-		utils.JSON(w, r, utils.ErrMessage("Внутренняя ошибка сервера"))
+		utils.JSONwithCode(w, r, http.StatusInternalServerError, utils.ErrMessage("Внутренняя ошибка сервера"))
 		return
 	}
 
