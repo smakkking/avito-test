@@ -1,2 +1,2 @@
 DROP TABLE IF EXISTS BannersInfo;
-DROP INDEX IF EXISTS banner_tag;
+DROP INDEX IF EXISTS banner_feature;

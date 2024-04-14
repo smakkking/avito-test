@@ -57,6 +57,11 @@ func (h *Handler) GetUserBanner(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
+		if errors.Is(err, services.ErrNotAllowed) {
+			w.WriteHeader(http.StatusForbidden)
+			return
+		}
+
 		w.WriteHeader(http.StatusInternalServerError)
 		render.JSON(w, r, ErrMessage("Внутренняя ошибка сервера"))
 		return
@@ -125,6 +130,11 @@ func (h *Handler) GetAllBannersFiltered(w http.ResponseWriter, r *http.Request) 
 		limit, offset,
 	)
 	if err != nil {
+		if errors.Is(err, services.ErrNotAllowed) {
+			w.WriteHeader(http.StatusForbidden)
+			return
+		}
+
 		w.WriteHeader(http.StatusInternalServerError)
 		render.JSON(w, r, ErrMessage("Внутренняя ошибка сервера"))
 		return
@@ -145,6 +155,11 @@ func (h *Handler) CreateBanner(w http.ResponseWriter, r *http.Request) {
 
 	bannerID, err := h.bannerService.CreateBanner(r.Context(), banner)
 	if err != nil {
+		if errors.Is(err, services.ErrNotAllowed) {
+			w.WriteHeader(http.StatusForbidden)
+			return
+		}
+
 		w.WriteHeader(http.StatusInternalServerError)
 		render.JSON(w, r, ErrMessage("Внутренняя ошибка сервера"))
 		return
@@ -176,6 +191,11 @@ func (h *Handler) UpdateBanner(w http.ResponseWriter, r *http.Request) {
 
 	affected, err := h.bannerService.UpdateBanner(r.Context(), bannerID, banner)
 	if err != nil {
+		if errors.Is(err, services.ErrNotAllowed) {
+			w.WriteHeader(http.StatusForbidden)
+			return
+		}
+
 		w.WriteHeader(http.StatusInternalServerError)
 		render.JSON(w, r, ErrMessage("Внутренняя ошибка сервера"))
 		return
@@ -202,6 +222,11 @@ func (h *Handler) DeleteBanner(w http.ResponseWriter, r *http.Request) {
 
 	affected, err := h.bannerService.DeleteBanner(r.Context(), bannerID)
 	if err != nil {
+		if errors.Is(err, services.ErrNotAllowed) {
+			w.WriteHeader(http.StatusForbidden)
+			return
+		}
+
 		w.WriteHeader(http.StatusInternalServerError)
 		render.JSON(w, r, ErrMessage("Внутренняя ошибка сервера"))
 		return

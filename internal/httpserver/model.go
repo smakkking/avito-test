@@ -10,6 +10,7 @@ import (
 	"github.com/sirupsen/logrus"
 	"github.com/smakkking/avito_test/internal/app"
 	"github.com/smakkking/avito_test/internal/handlers"
+	myMiddleware "github.com/smakkking/avito_test/internal/httpserver/middleware"
 )
 
 type HTTPService struct {
@@ -37,6 +38,7 @@ func (h *HTTPService) SetupHandlers(bannerHandler *handlers.Handler) {
 	// setup middleware
 	h.mux.Use(middleware.RequestID)
 	h.mux.Use(middleware.Recoverer)
+	h.mux.Use(myMiddleware.Authorization)
 
 	h.mux.Get("/user_banner", bannerHandler.GetUserBanner)
 	h.mux.Get("/banner", bannerHandler.GetAllBannersFiltered)
