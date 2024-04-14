@@ -92,7 +92,7 @@ func (s *Storage) CreateBanner(ctx context.Context, banner *models.BasicBannnerI
 		ctx,
 		`
 		INSERT INTO BannersInfo("value", tag_array, feature, is_enabled)
-		VALUES ($1, $2, $3, $4) RETURNING "id";
+		VALUES ($1::jsonb, $2, $3, $4) RETURNING "id";
 		`,
 		banner.Content, pq.Array(banner.TagIDs), banner.FeatureID, banner.IsActive,
 	).Scan(&bannerID)

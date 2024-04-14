@@ -23,7 +23,7 @@ apply-migrations:
 	sleep 20
 	docker run --network host migrator  \
 	-path=/migrations/ \
-	-database "postgresql://postgres:postgres@localhost:7557/urls?sslmode=disable" up
+	-database "postgresql://postgres:postgres@localhost:7557/banners?sslmode=disable" up
 
 build-docker:
 	STORAGE=$(STORAGE) docker-compose up --build
