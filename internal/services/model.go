@@ -2,6 +2,7 @@ package services
 
 import (
 	"context"
+	"database/sql"
 	"errors"
 
 	"github.com/smakkking/avito_test/internal/models"
@@ -88,6 +89,10 @@ func (s *Service) GetUserBanner(ctx context.Context, tagID int, featureID int, u
 	banner, enabled, err := s.bannerStorage.GetUserBanner(ctx, tagID, featureID)
 
 	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, ErrNotFound
+		}
+
 		return nil, err
 	}
 
